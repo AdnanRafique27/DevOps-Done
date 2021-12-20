@@ -1,0 +1,46 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Makuing a directory
+      file:
+        path: ./docker-file
+        state: directory
+        mode: '0755'
+    - name: copying files from local to remote server
+      copy:
+        src: /home/ansible/ansible-playbooks/wordpress/Dockerfile
+        dest: ./docker-file/Dockerfile
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+
+    - name: Upgrade all apt packages
+      apt: upgrade=dist
+
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - gnupg-agent
+    - name: Install Docker
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+    - name: build docker image from Dokerfile
+      command: docker build -t wordpress-img ./docker-file/
+    - name: run a container
+      command: docker run --name container1 -dit -p 8080:80 wordpress-img
+...

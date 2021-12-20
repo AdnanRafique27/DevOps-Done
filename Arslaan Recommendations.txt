@@ -1,0 +1,1 @@
+advanced session on local registry, running it on https, exposing docker daemon api, assigning stack of static ip to multiple containers, multi-staged dockerfile, best practices to write a dockerfile.
